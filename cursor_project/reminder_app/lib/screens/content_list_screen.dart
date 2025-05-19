@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reminder_app/screens/reminder_list_screen.dart';
+import 'package:reminder_app/screens/settings_screen.dart';
 import '../providers/auth_provider.dart';
 import 'memo_list_screen.dart';
 import 'calculator_screen.dart';
+import 'settings_screen.dart';
 
 class ContentListScreen extends StatelessWidget {
   const ContentListScreen({super.key});
@@ -68,6 +70,20 @@ class ContentListScreen extends StatelessWidget {
               enabled: false,
             ),
           ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.settings),
+              title : const Text("설정"),
+              subtitle : const Text("앱의 설정을 변경합니다."),
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                );
+              },
+            )
+          )
         ],
       ),
     );
