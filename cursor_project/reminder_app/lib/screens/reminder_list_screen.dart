@@ -45,7 +45,20 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(reminder.title),
+                    leading: Checkbox(
+                      value: reminder.isDone,
+                      onChanged: (value) async {
+                        final updated = reminder.copyWith(isDone: value!);
+                        await reminderProvider.updateReminder(updated);
+                      },
+                    ),
+                    title: Text(
+                      reminder.title,
+                      style: TextStyle(
+                        decoration: reminder.isDone ? TextDecoration.lineThrough : null,
+                        color: reminder.isDone ? Colors.grey : null,
+                      ),
+                    ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -53,6 +66,9 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
                           reminder.description.length > 50
                               ? '${reminder.description.substring(0, 50)}...'
                               : reminder.description,
+                          style: TextStyle(
+                            color: reminder.isDone ? Colors.grey : null,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -88,7 +104,6 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
             context,
             MaterialPageRoute(builder: (context) => const AddReminderScreen()),
           );
-          // 리마인더 추가 후 목록 새로고침
           if (mounted) {
             Provider.of<ReminderProvider>(context, listen: false).loadReminders();
           }

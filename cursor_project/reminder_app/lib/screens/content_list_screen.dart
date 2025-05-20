@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:reminder_app/screens/ledger_screen.dart';
 import 'package:reminder_app/screens/reminder_list_screen.dart';
 import 'package:reminder_app/screens/settings_screen.dart';
 import '../providers/auth_provider.dart';
 import 'memo_list_screen.dart';
 import 'calculator_screen.dart';
 import 'settings_screen.dart';
+import 'ledger_screen.dart';
 
 class ContentListScreen extends StatelessWidget {
   const ContentListScreen({super.key});
@@ -57,6 +59,20 @@ class ContentListScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CalculatorScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calculate),
+              title: const Text('가계부'),
+              subtitle: const Text('지출/수입 내역 작성'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LedgerScreen()),
                 );
               },
             ),
