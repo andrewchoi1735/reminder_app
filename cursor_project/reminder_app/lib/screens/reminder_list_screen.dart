@@ -59,7 +59,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
         builder: (context, reminderProvider, child) {
           final reminders = reminderProvider.reminders;
           if (reminders.isEmpty) {
-            return const Center(child: Text('등록된 할일이 없습니다.'));
+            return const Center(child: Text('등록된 할 일이 없습니다.'));
           }
 
           final groupedReminders = groupRemindersByWeek(reminders);

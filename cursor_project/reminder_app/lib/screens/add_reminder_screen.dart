@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
 import '../providers/reminder_provider.dart';
 import '../models/reminder.dart';
 
@@ -29,13 +30,13 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
         _selectedDate = picked;
       });
@@ -43,11 +44,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
+    final picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null) {
       setState(() {
         _selectedTime = picked;
       });
@@ -56,37 +57,32 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
   Future<void> _saveReminder() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
 
     try {
+      final formattedTime = '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}';
+
       final reminder = Reminder(
         title: _titleController.text,
         description: _descriptionController.text,
         date: _selectedDate,
-        time: _selectedTime.format(context),
+        time: formattedTime,
         participants: _participantsController.text.split(','),
       );
 
-      await Provider.of<ReminderProvider>(context, listen: false)
-          .addReminder(reminder);
+      await Provider.of<ReminderProvider>(context, listen: false).addReminder(reminder);
 
       if (!mounted) return;
-      
-      // 저장 성공 메시지 표시
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('할 일이 저장되었습니다.')),
       );
-      
-      // 홈 화면으로 돌아가기
       Navigator.of(context).pop();
     } catch (e) {
-      if (!mounted) return;
-      
-      // 에러 메시지 표시
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('할 일 저장 중 오류가 발생했습니다: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('할 일 저장 중 오류가 발생했습니다: $e')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -112,12 +108,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   labelText: '제목',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '제목을 입력해주세요';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty ? '제목을 입력해주세요' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -127,25 +118,20 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '상세 내용을 입력해주세요';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty ? '상세 내용을 입력해주세요' : null,
               ),
               const SizedBox(height: 16),
               ListTile(
                 title: const Text('날짜'),
-                subtitle: Text(
-                  DateFormat('yyyy년 MM월 dd일').format(_selectedDate),
-                ),
+                subtitle: Text(DateFormat('yyyy년 MM월 dd일').format(_selectedDate)),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () => _selectDate(context),
               ),
               ListTile(
                 title: const Text('시간'),
-                subtitle: Text(_selectedTime.format(context)),
+                subtitle: Text(
+                  '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
+                ),
                 trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(context),
               ),
@@ -156,12 +142,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   labelText: '참여자 (쉼표로 구분)',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '참여자를 입력해주세요';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty ? '참여자를 입력해주세요' : null,
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -180,4 +161,4 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       ),
     );
   }
-} 
+}
