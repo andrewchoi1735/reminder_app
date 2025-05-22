@@ -89,22 +89,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
-            title: const Text('진동'),
-            subtitle: const Text('버튼 클릭 시 진동'),
-            trailing: Switch(
-              value: _isVibrationEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _isVibrationEnabled = value;
-                  _saveSettings();
-                });
-              },
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            title: const Text('알림'),
-            subtitle: const Text('할 일 알림'),
+            title: const Text('푸시 알림'),
+            subtitle: const Text('할 일에 대한 푸시 알림 설정'),
             trailing: Switch(
               value: _isNotificationEnabled,
               onChanged: (value) async {
