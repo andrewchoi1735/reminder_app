@@ -9,11 +9,13 @@ plugins {
 android {
     namespace = "com.example.reminder_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // ✅ Kotlin DSL 문법으로 수정
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -21,10 +23,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.reminder_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -43,12 +42,16 @@ android {
 flutter {
     source = "../.."
 }
+
 dependencies {
+    // ✅ core desugaring 라이브러리는 이걸로 추가해야 함 (Kotlin DSL에서는 implementation ❌)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
     // Firebase BoM (Bill of Materials)
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 
-    // Firebase 제품별 SDK (예: Analytics)
+    // Firebase 제품별 SDK
     implementation("com.google.firebase:firebase-analytics")
 
-    // 여기에 필요한 다른 Firebase SDK 추가 가능 (예: Crashlytics, Auth 등)
+    // 추가 Firebase SDK는 여기에 계속 추가 가능
 }
