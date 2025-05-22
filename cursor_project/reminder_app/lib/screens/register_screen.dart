@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'home_screen.dart';
 import 'content_list_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,14 +14,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _userIdController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _birthDateController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
     _userIdController.dispose();
     _passwordController.dispose();
-    _birthDateController.dispose();
     super.dispose();
   }
 
@@ -34,10 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final success = await Provider.of<AuthProvider>(context, listen: false)
           .register(
-            _userIdController.text,
-            _passwordController.text,
-            _birthDateController.text,
-          );
+        _userIdController.text,
+        _passwordController.text,
+      );
 
       if (!mounted) return;
 
@@ -98,26 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _birthDateController,
-                decoration: const InputDecoration(
-                  labelText: '생년월일 (YYYY-MM-DD)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '생년월일을 입력해주세요';
-                  }
-                  // 날짜 형식 검증
-                  try {
-                    DateTime.parse(value);
-                  } catch (e) {
-                    return '올바른 날짜 형식이 아닙니다 (YYYY-MM-DD)';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -135,4 +111,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-} 
+}

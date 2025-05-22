@@ -3,21 +3,36 @@ import 'package:provider/provider.dart';
 import 'package:reminder_app/screens/ledger_screen.dart';
 import 'package:reminder_app/screens/reminder_list_screen.dart';
 import 'package:reminder_app/screens/settings_screen.dart';
+import 'package:reminder_app/screens/memo_list_screen.dart';
+import 'package:reminder_app/screens/calculator_screen.dart';
+import 'package:reminder_app/screens/login_screen.dart'; // 로그인 화면 import
 import '../providers/auth_provider.dart';
-import 'memo_list_screen.dart';
-import 'calculator_screen.dart';
-import 'settings_screen.dart';
-import 'ledger_screen.dart';
 
 class ContentListScreen extends StatelessWidget {
   const ContentListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userId = Provider.of<AuthProvider>(context, listen: false).userId;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('컨텐츠 목록'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: '로그아웃',
+            onPressed: () async {
+              await authProvider.logout();
+
+              // 로그인 화면으로 이동 (뒤로가기 방지)
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
@@ -25,8 +40,8 @@ class ContentListScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.alarm),
-              title: const Text('리마인더'),
-              subtitle: const Text('일정 및 알림 관리'),
+              title: const Text('할 일'),
+              subtitle: const Text('일정 관리 & 캘린더로 관리'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -90,18 +105,18 @@ class ContentListScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.settings),
-              title : const Text("설정"),
-              subtitle : const Text("앱의 설정을 변경합니다."),
-              onTap: (){
+              title: const Text("설정"),
+              subtitle: const Text("앱의 설정을 변경합니다."),
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 );
               },
-            )
-          )
+            ),
+          ),
         ],
       ),
     );
   }
-} 
+}

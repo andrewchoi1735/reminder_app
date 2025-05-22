@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:reminder_app/utils/notification_helper.dart'; // 🔔 알림 함수 import
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../models/reminder.dart';
 
 class ReminderProvider with ChangeNotifier {
@@ -37,9 +39,9 @@ class ReminderProvider with ChangeNotifier {
         _reminders = [];
       }
       notifyListeners();
-      debugPrint('리마인더 로드 완료: ${_reminders.length}개');
+      debugPrint('할 일 로드 완료: ${_reminders.length}개');
     } catch (e) {
-      debugPrint('리마인더 로드 오류: $e');
+      debugPrint('할 일 로드 오류: $e');
       rethrow;
     }
   }
@@ -50,9 +52,9 @@ class ReminderProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final String encodedList = json.encode(_reminders.map((r) => r.toJson()).toList());
       await prefs.setString(_storageKey, encodedList);
-      debugPrint('리마인더 저장 완료');
+      debugPrint('할 일 저장 완료');
     } catch (e) {
-      debugPrint('리마인더 저장 오류: $e');
+      debugPrint('할 일 저장 오류: $e');
       rethrow;
     }
   }
@@ -64,9 +66,20 @@ class ReminderProvider with ChangeNotifier {
       _reminders.add(reminder);
       await _saveReminders();
       notifyListeners();
-      debugPrint('리마인더 추가 성공: ID=${reminder.id}');
+      debugPrint('할 일 추가 성공: ID=${reminder.id}');
+
+      // ✅ 푸시 알림 예약
+      final DateTime scheduledTime = DateTime.parse(
+        '${reminder.date.toIso8601String().split('T').first} ${reminder.time}',
+      );
+      await scheduleReminderNotification(
+        id: reminder.id!,
+        title: reminder.title,
+        remindAt: scheduledTime,
+      );
+      debugPrint('알림 예약 완료: ${scheduledTime.subtract(const Duration(minutes: 30))}');
     } catch (e) {
-      debugPrint('리마인더 추가 오류: $e');
+      debugPrint('할 일 추가 오류: $e');
       rethrow;
     }
   }
@@ -79,10 +92,10 @@ class ReminderProvider with ChangeNotifier {
         _reminders[index] = reminder;
         await _saveReminders();
         notifyListeners();
-        debugPrint('리마인더 업데이트 성공: ID=${reminder.id}');
+        debugPrint('할 일 업데이트 성공: ID=${reminder.id}');
       }
     } catch (e) {
-      debugPrint('리마인더 업데이트 오류: $e');
+      debugPrint('할 일 업데이트 오류: $e');
       rethrow;
     }
   }
@@ -93,10 +106,31 @@ class ReminderProvider with ChangeNotifier {
       _reminders.removeWhere((r) => r.id == id);
       await _saveReminders();
       notifyListeners();
-      debugPrint('리마인더 삭제 성공: ID=$id');
+      debugPrint('할 일 삭제 성공: ID=$id');
     } catch (e) {
-      debugPrint('리마인더 삭제 오류: $e');
+      debugPrint('할 일 삭제 오류: $e');
       rethrow;
     }
   }
-} 
+  Future<void> rescheduleAllReminders(bool enable) async {
+    if (!enable) {
+      await flutterLocalNotificationsPlugin.cancelAll(); // 모든 알림 취소
+      debugPrint('🔕 모든 알림 취소됨');
+      return;
+    }
+
+    for (var reminder in _reminders) {
+      final DateTime scheduledTime = DateTime.parse(
+        '${reminder.date.toIso8601String().split('T').first} ${reminder.time}',
+      );
+
+      await scheduleReminderNotification(
+        id: reminder.id!,
+        title: reminder.title,
+        remindAt: scheduledTime,
+      );
+    }
+
+    debugPrint('🔔 모든 리마인더에 대해 알림 재예약 완료');
+  }
+}

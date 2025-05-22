@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Reminder {
   int? id;
   final String title;
@@ -29,6 +31,24 @@ class Reminder {
       'isDone': isDone ? 1 : 0, // ✅ bool → int
     };
   }
+
+  Map<String, List<Reminder>> groupRemindersByWeek(List<Reminder> reminders) {
+    Map<String, List<Reminder>> grouped = {};
+
+    for (var reminder in reminders) {
+      final monday = reminder.date.subtract(Duration(days: reminder.date.weekday - 1));
+      final sunday = monday.add(const Duration(days: 6));
+      final key = '${DateFormat('yyyy.MM.dd').format(monday)} ~ ${DateFormat('MM.dd').format(sunday)}';
+
+      if (!grouped.containsKey(key)) {
+        grouped[key] = [];
+      }
+      grouped[key]!.add(reminder);
+    }
+
+    return grouped;
+  }
+
 
   /// ✅ fromMap (fromJson)
   factory Reminder.fromJson(Map<String, dynamic> json) {

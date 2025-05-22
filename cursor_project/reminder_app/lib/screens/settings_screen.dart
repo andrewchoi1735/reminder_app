@@ -103,14 +103,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
           ListTile(
             title: const Text('알림'),
-            subtitle: const Text('리마인더 알림'),
+            subtitle: const Text('할 일 알림'),
             trailing: Switch(
               value: _isNotificationEnabled,
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _isNotificationEnabled = value;
-                  _saveSettings();
                 });
+                await _saveSettings();
+
+                final reminderProvider = Provider.of<ReminderProvider>(context, listen: false);
+                await reminderProvider.rescheduleAllReminders(value); // 알림 설정 반영
               },
             ),
           ),

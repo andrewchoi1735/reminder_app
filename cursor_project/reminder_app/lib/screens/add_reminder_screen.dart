@@ -75,7 +75,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       
       // 저장 성공 메시지 표시
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('리마인더가 저장되었습니다.')),
+        const SnackBar(content: Text('할 일이 저장되었습니다.')),
       );
       
       // 홈 화면으로 돌아가기
@@ -85,7 +85,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       
       // 에러 메시지 표시
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('리마인더 저장 중 오류가 발생했습니다: $e')),
+        SnackBar(content: Text('할 일 저장 중 오류가 발생했습니다: $e')),
       );
     } finally {
       if (mounted) {
@@ -98,7 +98,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('리마인더 추가'),
+        title: const Text('할 일 추가'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
