@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reminder_app/screens/ledger_screen.dart';
 import 'package:reminder_app/screens/reminder_list_screen.dart';
+import 'package:reminder_app/screens/sensor_step_counter_screen.dart';
 import 'package:reminder_app/screens/settings_screen.dart';
 import 'package:reminder_app/screens/memo_list_screen.dart';
 import 'package:reminder_app/screens/calculator_screen.dart';
@@ -88,6 +89,20 @@ class ContentListScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const LedgerScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.timelapse),
+              title: const Text('만보기'),
+              subtitle: const Text('걸음 수를 확인할 수 있어요!'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SensorStepCounterScreen()),
                 );
               },
             ),

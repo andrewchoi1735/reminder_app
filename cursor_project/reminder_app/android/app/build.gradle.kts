@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // Flutter Gradle Plugin은 Android/Kotlin 플러그인 이후에 적용
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
@@ -11,32 +11,31 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
+    defaultConfig {
+        applicationId = "com.example.reminder_app"
+        minSdk = 26 // ✅ 삼성 헬스 SDK 요구사항
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        // ✅ Kotlin DSL 문법으로 수정
-        isCoreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true // ✅ JDK8+ 기능 사용 허용
     }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    defaultConfig {
-        applicationId = "com.example.reminder_app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("debug") // TODO: 실제 릴리즈 키로 교체
         }
     }
+
+    // ✅ AAR 수동 추가 시, flatDir 지정은 여기 아님! 아래 dependencies → repositories로 빼야 함
 }
 
 flutter {
@@ -44,14 +43,21 @@ flutter {
 }
 
 dependencies {
-    // ✅ core desugaring 라이브러리는 이걸로 추가해야 함 (Kotlin DSL에서는 implementation ❌)
+    // ✅ JDK 라이브러리 desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    // Firebase BoM (Bill of Materials)
+    // ✅ Firebase BoM 및 SDK (필요 시만)
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-
-    // Firebase 제품별 SDK
     implementation("com.google.firebase:firebase-analytics")
 
-    // 추가 Firebase SDK는 여기에 계속 추가 가능
+
+}
+
+// ✅ 플러그인 밖에 명시: AAR 파일 경로 인식용
+repositories {
+    google()
+    mavenCentral()
+    flatDir {
+        dirs("../libs") // 📌 AAR 경로를 정확하게 명시
+    }
 }

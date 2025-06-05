@@ -1,4 +1,5 @@
 pluginManagement {
+    // 그대로 유지
     val flutterSdkPath = run {
         val properties = java.util.Properties()
         file("local.properties").inputStream().use { properties.load(it) }
@@ -6,7 +7,6 @@ pluginManagement {
         require(flutterSdkPath != null) { "flutter.sdk not set in local.properties" }
         flutterSdkPath
     }
-
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
@@ -19,7 +19,10 @@ pluginManagement {
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "8.7.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false // ✅ 여기를 1.9.22로 변경
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 
 include(":app")
+// ❌ 아래 줄은 제거
+// include(":healthdata")
+// project(":healthdata").projectDir = File(rootDir, "libs")

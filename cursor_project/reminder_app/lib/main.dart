@@ -17,8 +17,10 @@ import 'screens/login_screen.dart';
 import 'screens/content_list_screen.dart';
 import 'screens/reminder_calendar_screen.dart';
 import 'screens/add_reminder_screen.dart';
+import 'screens/sensor_step_counter_screen.dart';
+import 'screens/reward_screen.dart'; // 상단 import
 
-import 'utils/notification_helper.dart'; // ✅ 반복 알림 함수 포함
+import 'utils/notification_helper.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
@@ -41,11 +43,21 @@ Future<void> requestNotificationPermission() async {
   }
 }
 
+Future<void> requestActivityPermission() async {
+  if (!kIsWeb && Platform.isAndroid) {
+    final status = await Permission.activityRecognition.status;
+    if (!status.isGranted) {
+      await Permission.activityRecognition.request();
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initNotifications(); // ✅ 알림 초기화
-  await requestNotificationPermission(); // ✅ Android 알림 권한 요청
+  await initNotifications();
+  await requestNotificationPermission();
+  await requestActivityPermission(); // ✅ 걸음수 측정용 권한 요청 추가!
 
   final authProvider = AuthProvider();
   await authProvider.init();
@@ -79,7 +91,7 @@ class _MyAppState extends State<MyApp> {
     super.didChangeDependencies();
     if (!_initialized) {
       final provider = Provider.of<ReminderProvider>(context, listen: false);
-      scheduleDailyReminders(context, provider); // ✅ context 안전한 시점에서 호출
+      scheduleDailyReminders(context, provider);
       _initialized = true;
     }
   }
@@ -94,6 +106,8 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/calendar': (context) => const ReminderCalendarScreen(),
         '/add_reminder': (context) => const AddReminderScreen(),
+        '/sensor_steps': (context) => const SensorStepCounterScreen(), // ✅ 걸음수 측정 화면
+        '/reward': (context) => const StepRewardScreen(),  // ✅ 추가
       },
       home: Consumer<AuthProvider>(
         builder: (context, auth, _) {
